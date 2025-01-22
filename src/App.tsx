@@ -3,6 +3,21 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import { NewNoteScreen } from "./NewNoteScreen.tsx";
 
+export type Note = {
+	id: string
+} & NoteData
+
+export type Tag = {
+	id: string
+	label: string
+}
+
+export type NoteData = {
+	title: string
+	markdown: string
+	tags: Tag[]
+}
+
 function App() {
 
   return (
