@@ -1,12 +1,24 @@
-import { useRef } from "react";
+import { useRef, useState, FormEvent } from "react";
 import { Form, Stack, Row, Col, FormGroup, Button } from "react-bootstrap";
 import CreatableReactSelect from "react-select/creatable";
 import { Link, useNavigate } from "react-router-dom";
+import { v4 as uuidV4 } from "uuid";
 
-export function NewForm({ onSubmit }) {
+
+import { NoteData, Tag } from "./App";
+
+type NoteFormProps = {
+	onSubmit: (data: NoteData) => void
+	onAddTag: (tag: Tag) => void
+	availableTags: Tag[]
+  } & Partial<NoteData>
+
+export function NewForm({ onSubmit, onAddTag, availableTags }: NoteFormProps) {
 	const titleRef = useRef<HTMLInputElement>(null);
 	const markdownRef = useRef<HTMLTextAreaElement>(null);
-	const navigate = useNavigate()
+	const navigate = useNavigate();
+
+	const [selectedTags, setSelectedTags] = useState<Tag[]>([])
 
 
 	function handleSubmit(e: FormEvent) {
@@ -15,11 +27,11 @@ export function NewForm({ onSubmit }) {
 		onSubmit({
 			title: titleRef.current!.value,
 			markdown: markdownRef.current!.value,
-			// tags: selectedTags,
+			tags: selectedTags,
 		})
 
 		navigate("..");
-	}
+	};
 
 	return (
 		<Form onSubmit={handleSubmit}>
@@ -34,7 +46,26 @@ export function NewForm({ onSubmit }) {
 					<Col>
 						<FormGroup controlId="tags">
 							<Form.Label>Tags</Form.Label>
-							<CreatableReactSelect isMulti />
+							<CreatableReactSelect isMulti
+								value={selectedTags.map(tag => {
+									return { label: tag.label, value: tag.id }
+								})}
+								onChange={tags => {
+									setSelectedTags(
+										tags.map(tag => {
+										return { label: tag.label, id: tag.value }
+										})
+									)
+								}}
+								onCreateOption={label => {
+									const newTag = { id: uuidV4(), label }
+									onAddTag(newTag)
+									setSelectedTags(prev => [...prev, newTag])
+								}}
+								options={availableTags.map(tag => {
+									return { label: tag.label, value: tag.id }
+								})}
+							/>
 						</FormGroup>
 					</Col>
 				</Row>
