@@ -1,7 +1,6 @@
 import { Button, Col, Form, Modal, Row, Stack } from "react-bootstrap";
 import { Tag } from "./App";
 
-
 type EditTagsModalProps = {
     show: boolean
     availableTags: Tag[]
