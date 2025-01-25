@@ -5,13 +5,13 @@ import ReactMarkdown from "react-markdown";
 
 type NoteProps = {
   onDelete: (id: string) => void
-}
+};
 
 export function Note({ onDelete }: NoteProps) {
-  const note = useNote();
-  const navigate = useNavigate()
+    const note = useNote();
+    const navigate = useNavigate();
 
-  return (
+    return (
         <>
             <Row className="align-items-center mb-4">
             <Col>

@@ -7,6 +7,10 @@ import { v4 as uuidV4 } from "uuid";
 
 import { NewNoteScreen } from "./NewNoteScreen.tsx";
 import { useLocalStorage } from "./useLocalStorage";
+import { NoteListScreen } from "./NoteListScreen.tsx";
+import { NoteLayout } from "./NoteLayout.tsx";
+import { Note } from "./Note.tsx";
+import { EditNote } from "./EditNote.tsx";
 
 
 export type Note = {
@@ -55,28 +59,66 @@ function App() {
 		})
 	};
 
+	function onUpdateNote(id: string, { tags, ...data }: NoteData) {
+		setNotes(prevNotes => {
+			return prevNotes.map(note => {
+				if (note.id === id) {
+					return { ...note, ...data, tagIds: tags.map(tag => tag.id) };
+				} else {
+					return note;
+				}
+			})
+		})
+	};
+
+	function onDeleteNote(id: string) {
+		setNotes(prevNotes => {
+			return prevNotes.filter(note => note.id !== id)
+		})
+	};
+
+	function addTag(tag: Tag) {
+		setTags(prev => [...prev, tag]);
+	};
+
+	function updateTag(id: string, label: string) {
+		setTags(prevTags => {
+			return prevTags.map(tag => {
+				if (tag.id === id) {
+					return { ...tag, label };
+				} else {
+					return tag;
+				}
+			})
+		})
+	};
+	
+	function deleteTag(id: string) {
+		setTags(prevTags => {
+			return prevTags.filter(tag => tag.id !== id);
+		});
+	}
+
 	return (
 		<Container className="my-4">
 			<Routes>
 				<Route
 					path="/"
 					element={
-						<h1>Hi</h1>
+						<NoteListScreen availableTags={tags} notes={notesWithTags} onUpdateTag={updateTag} onDeleteTag={deleteTag} />
 					}
 				/>
 				<Route
 					path="/new"
 					element={
-						<NewNoteScreen onSubmit={onCreateNote} />
+						<NewNoteScreen onSubmit={onCreateNote} onAddTag={addTag} availableTags={tags} />
 					}
 				/>
-				<Route path="/:id" element={<h1>veve</h1>}>
-					<Route index element={<h1>lal</h1>} />
+				<Route path="/:id" element={<NoteLayout notes={notesWithTags} />}>
+					<Route index element={<Note onDelete={onDeleteNote} />} />
 					<Route
 						path="edit"
-						element={
-							<h1>lsls</h1>
-						}
+						element={<EditNote onSubmit={onUpdateNote} onAddTag={addTag} availableTags={tags} />}
 					/>
 				</Route>
 				<Route path="*" element={<Navigate to="/" />} />
